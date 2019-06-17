@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>设计专业教学中用户调研的VR工具开发与应用</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="Build/UnityLoader.js"></script>
+    <script>
+      var unityInstance = UnityLoader.instantiate("unityContainer", "Build/Web.json", {onProgress: UnityProgress});
+    </script>
+  </head>
+  <body>
+    <div class="webgl-content">
+      <div id="unityContainer" style="width: 960px; height: 600px"></div>
+      <div class="footer">
+        <div class="webgl-logo"></div>
+        <div class="fullscreen" onclick="unityInstance.SetFullscreen(1)"></div>
+        <div class="title">设计专业教学中用户调研的VR工具开发与应用</div>
+          <br>
+          <br>
+          <div>
+              <a href="Video/VR_Display.html" target="_blank"><strong style="font-size: 1.2em">实验教学项目（VR环境）简介视频</strong></a>
+              <a href="Video/VR.html" target="_blank" style="float: right"><strong style="font-size: 1.2em; text-align: right">实验教学项目开发过程示范视频</strong></a>
+          </div>
+      </div>
+    </div>
+  </body>
+</html>
