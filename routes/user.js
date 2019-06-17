@@ -5,6 +5,9 @@ const verify = require('../medium/verify');
 const formatter = require('../medium/formatter');
 const mongo = require('../medium/mongo');
 const userInfo = require('../medium/userInfo');
+const common = require('./common');
+const ObjectID = require('mongodb').ObjectID;
+
 const collection = mongo.then(function (db) {
     return db.collection('user');
 });
@@ -20,7 +23,6 @@ router.post('/register', function (req, res, next) {
             collection.then(function (col) {
                 return col.findOne({username});
             }).then(function (item) {
-                console.log(item)
                 if (item) {
                     formatter(res, 0, 'already registered');
                 } else {
@@ -32,12 +34,45 @@ router.post('/register', function (req, res, next) {
                         });
                     }).then(function (result) {
                         req.session = {userId: result.insertedId};
-                        formatter(res, 0, 'success', {userInfo: userInfo(result.ops[0])});
+                        formatter(res, 0, 'success', userInfo(result.ops[0]));
                     });
                 }
             });
         }
     }
+});
+
+router.post('/login', function (req, res, next) {
+    const username = req.body.username, password = req.body.password;
+    if (verify.checkParameter(res, username, password)) {
+        collection.then(function (col) {
+            return col.findOne({username});
+        }).then(function (item) {
+            if (item && password === item.password) {
+                req.session = {userId: item._id};
+                formatter(res, 0, 'success', userInfo(item));
+            } else {
+                formatter(res, 0, 'login failed');
+            }
+        });
+    }
+});
+
+router.use('/*', common);
+
+router.get('/current', function (req, res, next) {
+    const userId = req.body.userId;
+    collection.then(function (col) {
+        return col.findOne({_id: ObjectID(userId ? userId : req.session.userId)});
+    }).then(function (item) {
+        if (item) {
+            if (item._id == req.session.userId) {
+                formatter(res, 0, 'success', userInfo(item));
+            }
+        } else {
+            formatter(res, 0, 'abnormal account');
+        }
+    });
 });
 
 module.exports = router;
