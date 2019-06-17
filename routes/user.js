@@ -1,13 +1,43 @@
 'use strict';
 const express = require('express');
 const router = express.Router();
+const verify = require('../medium/verify');
+const formatter = require('../medium/formatter');
 const mongo = require('../medium/mongo');
+const userInfo = require('../medium/userInfo');
 const collection = mongo.then(function (db) {
     return db.collection('user');
 });
 
-router.get('/register', function (req, res, next) {
-    res.send(collection);
+router.post('/register', function (req, res, next) {
+    const username = req.body.username, password = req.body.password;
+    if (verify.checkParameter(res, username, password)) {
+        if (!verify.isValidUsername(username)) {
+            formatter(res, 0, 'invalid username')
+        } else if (!verify.isValidPassword(password)) {
+            formatter(res, 0, 'password is too short');
+        } else {
+            collection.then(function (col) {
+                return col.findOne({username});
+            }).then(function (item) {
+                console.log(item)
+                if (item) {
+                    formatter(res, 0, 'already registered');
+                } else {
+                    collection.then(function (col) {
+                        return col.insertOne({
+                            password,
+                            username,
+                            role: "user"
+                        });
+                    }).then(function (result) {
+                        req.session = {userId: result.insertedId};
+                        formatter(res, 0, 'success', {userInfo: userInfo(result.ops[0])});
+                    });
+                }
+            });
+        }
+    }
 });
 
 module.exports = router;
