@@ -1,1 +1,0 @@
-(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([[7],{"/qbe":function(n,e,t){"use strict";t.r(e);t("+L6B");var c=t("2/Rp"),o=t("q1tI"),a=t.n(o),i=t("zHco"),l=function(){return a.a.createElement(i["a"],null,a.a.createElement(c["a"],{onClick:function(){window.location="/vr1"}},"Click Me"))};e["default"]=l}}]);
