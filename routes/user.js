@@ -12,6 +12,10 @@ const collection = mongo.then(function (db) {
     return db.collection('user');
 });
 
+router.get('/visit', function (req, res, next) {
+    formatter(res, 0, 'success', true);
+});
+
 router.post('/register', function (req, res, next) {
     const username = req.body.username, password = req.body.password;
     if (verify.checkParameter(res, username, password)) {
@@ -73,6 +77,15 @@ router.get('/current', function (req, res, next) {
             formatter(res, 0, 'abnormal account');
         }
     });
+});
+
+router.get('/data', function (req, res, next) {
+    collection.then(function (col) {
+        return col.countDocuments();
+    }).then(function (...args) {
+        formatter(res, 0, 'success', {visitData: args});
+    });
+
 });
 
 module.exports = router;
