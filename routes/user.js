@@ -44,7 +44,8 @@ router.post('/register', function (req, res, next) {
                         return col.insertOne({
                             password,
                             username,
-                            role: "user"
+                            role: "user",
+                            createTime: new Date()
                         });
                     }).then(function (result) {
                         req.session = {userId: result.insertedId};
@@ -92,12 +93,14 @@ router.get('/current', function (req, res, next) {
 router.get('/data', function (req, res, next) {
     const result = {};
     collection.then(function (col) {
-        return col.countDocuments();
+        return col.find({createTime: {$gte: todayDate()}}).toArray().then(function (items) {
+            result.accountD = items.length;
+            return col.countDocuments();
+        });
     }).then(function (arg) {
         result.accountT = arg;
         return visitCol.then(function (col) {
-            const dd = new Date();
-            return col.findOne({time: new Date(`${dd.getFullYear()}/${dd.getMonth() + 1}/${dd.getDate() - 1}`)}).then(function (arg) {
+            return col.findOne({time: todayDate()}).then(function (arg) {
                 result.visitD = arg.count;
                 return col.aggregate([{$group: {_id: null, sum: {$sum: '$count'}}}]).toArray();
             }).then(function (arg) {
@@ -107,10 +110,14 @@ router.get('/data', function (req, res, next) {
             });
         });
     }).then(function (arg) {
-
         formatter(res, 0, 'success', result);
     });
 
 });
+
+function todayDate() {
+    const dd = new Date();
+    return new Date(`${dd.getFullYear()}/${dd.getMonth() + 1}/${dd.getDate()}`);
+}
 
 module.exports = router;
