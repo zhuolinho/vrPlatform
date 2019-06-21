@@ -12,8 +12,18 @@ const collection = mongo.then(function (db) {
     return db.collection('user');
 });
 
+const visitCol = mongo.then(function (db) {
+    return db.collection('visit');
+});
+
 router.get('/visit', function (req, res, next) {
-    formatter(res, 0, 'success', true);
+    const dd = new Date();
+    visitCol.then(function (col) {
+        return col.findOneAndUpdate({time: new Date(`${dd.getFullYear()}/${dd.getMonth() + 1}/${dd.getDate() - 1}`)}, {$inc: {count: 1}}, {upsert: true});
+    }).then(function (item) {
+        console.log(item);
+        formatter(res, 0, 'success', item);
+    });
 });
 
 router.post('/register', function (req, res, next) {
@@ -80,10 +90,25 @@ router.get('/current', function (req, res, next) {
 });
 
 router.get('/data', function (req, res, next) {
+    const result = {};
     collection.then(function (col) {
         return col.countDocuments();
-    }).then(function (...args) {
-        formatter(res, 0, 'success', {visitData: args});
+    }).then(function (arg) {
+        result.accountT = arg;
+        return visitCol.then(function (col) {
+            const dd = new Date();
+            return col.findOne({time: new Date(`${dd.getFullYear()}/${dd.getMonth() + 1}/${dd.getDate() - 1}`)}).then(function (arg) {
+                result.visitD = arg.count;
+                return col.aggregate([{$group: {_id: null, sum: {$sum: '$count'}}}]).toArray();
+            }).then(function (arg) {
+                if (arg.length) {
+                    result.visitT = arg[0].sum;
+                }
+            });
+        });
+    }).then(function (arg) {
+
+        formatter(res, 0, 'success', result);
     });
 
 });
