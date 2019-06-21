@@ -16,6 +16,10 @@ const visitCol = mongo.then(function (db) {
     return db.collection('visit');
 });
 
+const vrCol = mongo.then(function (db) {
+    return db.collection('vr');
+});
+
 router.get('/visit', function (req, res, next) {
     visitCol.then(function (col) {
         return col.findOneAndUpdate({time: todayDate()}, {$inc: {count: 1}}, {upsert: true});
@@ -98,13 +102,22 @@ router.get('/data', function (req, res, next) {
             return col.findOne({time: todayDate()}).then(function (arg) {
                 result.visitD = arg.count;
                 return col.aggregate([{$group: {_id: null, sum: {$sum: '$count'}}}]).toArray();
-            }).then(function (arg) {
-                if (arg.length) {
-                    result.visitT = arg[0].sum;
-                }
             });
         });
     }).then(function (arg) {
+        if (arg.length) {
+            result.visitT = arg[0].sum;
+        }
+        return vrCol.then(function (col) {
+            return col.findOne({time: todayDate()}).then(function (arg) {
+                result.vrD = arg.count;
+                return col.aggregate([{$group: {_id: null, sum: {$sum: '$count'}}}]).toArray();
+            })
+        });
+    }).then(function (arg) {
+        if (arg.length) {
+            result.vrT = arg[0].sum;
+        }
         formatter(res, 0, 'success', result);
     });
 
