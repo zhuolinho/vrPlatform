@@ -17,11 +17,9 @@ const visitCol = mongo.then(function (db) {
 });
 
 router.get('/visit', function (req, res, next) {
-    const dd = new Date();
     visitCol.then(function (col) {
-        return col.findOneAndUpdate({time: new Date(`${dd.getFullYear()}/${dd.getMonth() + 1}/${dd.getDate() - 1}`)}, {$inc: {count: 1}}, {upsert: true});
+        return col.findOneAndUpdate({time: todayDate()}, {$inc: {count: 1}}, {upsert: true});
     }).then(function (item) {
-        console.log(item);
         formatter(res, 0, 'success', item);
     });
 });
@@ -76,14 +74,11 @@ router.post('/login', function (req, res, next) {
 router.use('/*', common);
 
 router.get('/current', function (req, res, next) {
-    const userId = req.body.userId;
     collection.then(function (col) {
-        return col.findOne({_id: ObjectID(userId ? userId : req.session.userId)});
+        return col.findOne({_id: ObjectID(req.session.userId)});
     }).then(function (item) {
         if (item) {
-            if (item._id == req.session.userId) {
-                formatter(res, 0, 'success', userInfo(item));
-            }
+            formatter(res, 0, 'success', userInfo(item));
         } else {
             formatter(res, 0, 'abnormal account');
         }
