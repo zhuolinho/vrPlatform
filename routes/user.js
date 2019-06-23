@@ -100,7 +100,7 @@ router.get('/data', function (req, res, next) {
         result.accountT = arg;
         return visitCol.then(function (col) {
             return col.findOne({time: todayDate()}).then(function (arg) {
-                result.visitD = arg.count;
+                result.visitD = arg ? arg.count : 0;
                 return col.aggregate([{$group: {_id: null, sum: {$sum: '$count'}}}]).toArray();
             });
         });
@@ -110,7 +110,7 @@ router.get('/data', function (req, res, next) {
         }
         return vrCol.then(function (col) {
             return col.findOne({time: todayDate()}).then(function (arg) {
-                result.vrD = arg.count;
+                result.vrD = arg ? arg.count : 0;
                 return col.aggregate([{$group: {_id: null, sum: {$sum: '$count'}}}]).toArray();
             })
         });
