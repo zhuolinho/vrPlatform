@@ -6,6 +6,7 @@ const formatter = require('../medium/formatter');
 const mongo = require('../medium/mongo');
 const userInfo = require('../medium/userInfo');
 const common = require('./common');
+const _ = require('lodash');
 const ObjectID = require('mongodb').ObjectID;
 
 const collection = mongo.then(function (db) {
@@ -121,6 +122,28 @@ router.get('/data', function (req, res, next) {
         formatter(res, 0, 'success', result);
     });
 
+});
+
+router.post('/chartData', function (req, res, next) {
+    if (req.body.length !== 2) formatter(res, 0, 'fail', req.body);
+    else {
+        const result = {};
+        visitCol.then(function (col) {
+            return col.find({time: {$gte: new Date(req.body[0]), $lt: new Date(req.body[1])}}).toArray();
+        }).then(function (items) {
+            result.visit = _.keyBy(items.map(function (item) {
+                return {...item, time: item.time.toJSON()};
+            }), 'time');
+            vrCol.then(function (col) {
+                return col.find({time: {$gte: new Date(req.body[0]), $lt: new Date(req.body[1])}}).toArray();
+            }).then(function (items) {
+                result.vr = _.keyBy(items.map(function (item) {
+                    return {...item, time: item.time.toJSON()};
+                }), 'time');
+                formatter(res, 0, 'success', result);
+            });
+        });
+    }
 });
 
 function todayDate() {
