@@ -2,9 +2,9 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 var apiRouter = require('./routes/api');
-var vrRouter = require('./routes/vr');
 
 var app = express();
 
@@ -14,11 +14,13 @@ app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', apiRouter);
-app.use('/vr', vrRouter);
+var corsOptions = {
+    origin: ['http://vrdesign.sjtu.edu.cn/', 'http://localhost:8000', "http://localhost:3000"],
+    credentials: true,
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+app.use(cors(corsOptions));
 
-app.get('/*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+app.use('/api', apiRouter);
 
 module.exports = app;

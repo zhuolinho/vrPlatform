@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const userRouter = require('./user');
+const vrRouter = require('./vr');
 const commonRouter = require('./common');
 const cookieSession = require('cookie-session');
 
@@ -13,6 +14,7 @@ router.use(function timeLog(req, res, next) {
     next();
 });
 
+router.use('/vr', vrRouter);
 router.use('/user', userRouter);
 router.use('/*', commonRouter);
 
