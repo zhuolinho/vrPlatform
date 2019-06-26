@@ -13,7 +13,7 @@ router.use(function (req, res, next) {
         collection.then(function (col) {
             return col.findOneAndUpdate({time: todayDate()}, {$inc: {count: 1}}, {upsert: true});
         }).then(function (item) {
-            formatter(res, 0, 'success', {item, path: '/vr'});
+            formatter(res, 0, 'success', {item, path: 'http://dschool.sjtu.edu.cn/home/research/vrtool/'});
         });
     } else formatter(res, 0, 'success', {path: '#/user/login'});
 });
