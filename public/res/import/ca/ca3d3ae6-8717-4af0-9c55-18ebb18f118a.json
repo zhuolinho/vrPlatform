@@ -1,1 +1,1 @@
-{"__type__":"cc.SpriteFrame","content":{"name":"ef_gun02","texture":"1426547d7","rect":[491,3,160,51],"offset":[-3,0],"originalSize":[272,75],"capInsets":[0,0,0,0]}}
+{"__type__":"cc.SpriteFrame","content":{"name":"ef_gun02","texture":"12b8dd2e5","rect":[3,585,160,51],"offset":[-3,0],"originalSize":[272,75],"rotated":1,"capInsets":[0,0,0,0]}}
