@@ -6,7 +6,7 @@ const vrRouter = require('./vr');
 const commonRouter = require('./common');
 const cookieSession = require('cookie-session');
 
-router.use(cookieSession({secret: 'Im fuckerB', maxAge: 3000 * 24 * 60 * 60 * 1000}));
+router.use(cookieSession({secret: 'Im fuckerB', maxAge: 3000 * 24 * 60 * 60 * 1000, sameSite: 'none'}));
 
 /* GET home page. */
 router.use(function timeLog(req, res, next) {
